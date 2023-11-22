@@ -157,6 +157,9 @@ require __DIR__ . "/functions/functions.php";
         // 9- Etablir une connexion avec la base de données
         require __DIR__ . "/db/connexion.php";
 
+        // Encodons le mot de passe
+        $passwordHashed = password_hash($postClean['password'], PASSWORD_BCRYPT);
+
         // 10- Effectuer la requête d'insertion du nouveau film dans la table des films de la base de données.
 
             // 10-a) On prepare la requête
@@ -166,7 +169,7 @@ require __DIR__ . "/functions/functions.php";
         $req->bindValue(":first_name", $postClean['firstName']);
         $req->bindValue(":last_name", $postClean['lastName']);
         $req->bindValue(":email", $postClean['email']);
-        $req->bindValue(":password", $postClean['password']);
+        $req->bindValue(":password", $passwordHashed);
 
             // 10-c) On execute la requête
         $req->execute();
@@ -179,7 +182,7 @@ require __DIR__ . "/functions/functions.php";
         $_SESSION['success'] = "Bienvenue.";
 
         // 12- Effectuer une redirection vers la page d'accueil puis arrêter l'exécution du script.
-        return header("Location: index.php");
+        return header("Location: connexion.php");
     }
 
     $_SESSION['csrf_token'] = bin2hex(random_bytes(30));
@@ -218,11 +221,11 @@ require __DIR__ . "/functions/functions.php";
                 </div>
                 <div>
                     <label for="password">Mot de passe</label>
-                    <input type="text" name="password" id="password">
+                    <input type="password" name="password" id="password">
                 </div>
                 <div>
                     <label for="confirmPassword">Confirmation du mot de passe</label>
-                    <input type="text" name="confirmPassword" id="confirmPassword">
+                    <input type="password" name="confirmPassword" id="confirmPassword">
                 </div>
                 <div>
                     <input formnovalidate type="submit" value="Je m'inscris">

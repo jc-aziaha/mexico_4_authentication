@@ -18,5 +18,4 @@
         // Affichons le message d'erreur puis arrêtons l'exécution du script.
         die("Erreur de connexion à la base de données: " . $e->getMessage());
     }
-
 ?>
