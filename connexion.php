@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+    if ( isset($_SESSION['user']) && !empty($_SESSION['user']) ) 
+    {
+        return header('Location: index.php');
+    }
+
 require __DIR__ . "/functions/functions.php";
 
     /*
@@ -104,8 +109,21 @@ require __DIR__ . "/functions/functions.php";
          *      -- Si l'email existe, vérifier si le mot de passe envoyé par la personne qui essaie de se connecter correspond également
          *      -- Par conséquent, il faut que le couple email-password corresponde afin d'authentifier l'utilisateur
          */
-        // $loginResponse = loginAuthenticator($postClean['email'], $postClean['password']);
-        // Pause
+        $loginAuthenticatorResponse = loginAuthenticator($postClean['email'], $postClean['password']);
+        
+        if ( $loginAuthenticatorResponse === null )
+        {
+
+            $_SESSION['bad_credentials'] = "Les identifiants sont invalides.";
+
+            // Effectuer une redirection vers la page de la laquelle proviennent les informations 
+            // puis arrêter l'exécution du script.
+            return header("Location: " . $_SERVER['HTTP_REFERER']);
+        }
+
+        $_SESSION['user'] = $loginAuthenticatorResponse;
+
+        return header("Location: index.php");
     }
 
     $_SESSION['csrf_token'] = bin2hex(random_bytes(30));
@@ -116,6 +134,13 @@ require __DIR__ . "/functions/functions.php";
 
         <main>
             <h1>Connexion</h1>
+
+            <?php if(isset($_SESSION['bad_credentials']) && !empty($_SESSION['bad_credentials'])) : ?>
+                <div style="background-color:red;">
+                    <?= $_SESSION['bad_credentials']; ?>
+                </div>
+                <?php unset($_SESSION['bad_credentials']); ?>
+            <?php endif ?>
 
             <?php if( isset($_SESSION['form_errors']) && !empty($_SESSION['form_errors']) ) : ?>
                 <div style="color:red;" role="alert">

@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+if ( isset($_SESSION['user']) && !empty($_SESSION['user']) ) 
+{
+    return header('Location: index.php');
+}
+
 require __DIR__ . "/functions/functions.php";
 
     /*
